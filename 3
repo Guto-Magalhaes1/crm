@@ -1,0 +1,230 @@
+// Senha única para acesso
+const PASSWORD = "Betta123";
+
+// Elementos de login
+const loginContainer = document.getElementById("login-container");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("login-btn");
+const loginError = document.getElementById("login-error");
+
+// Elementos do CRM
+const crmContainer = document.getElementById("crm-container");
+const logoutBtn = document.getElementById("logout-btn");
+
+const todoList = document.getElementById("todo-list");
+const inprogressList = document.getElementById("inprogress-list");
+const doneList = document.getElementById("done-list");
+const addTodoBtn = document.getElementById("add-todo-btn");
+
+// Modal elementos
+const taskModal = document.getElementById("task-modal");
+const modalTitle = document.getElementById("modal-title");
+const taskTitleInput = document.getElementById("task-title");
+const taskDescInput = document.getElementById("task-desc");
+const taskRespSelect = document.getElementById("task-resp");
+const saveTaskBtn = document.getElementById("save-task-btn");
+const cancelTaskBtn = document.getElementById("cancel-task-btn");
+
+// Estado da aplicação
+let tasks = []; // tarefas em formato: {id, title, description, status, responsible}
+let editingTaskId = null;
+let loggedIn = false;
+
+// --- Funções auxiliares ---
+
+function saveTasks() {
+  localStorage.setItem("betta_tasks", JSON.stringify(tasks));
+}
+
+function loadTasks() {
+  const data = localStorage.getItem("betta_tasks");
+  tasks = data ? JSON.parse(data) : [];
+}
+
+function renderTasks() {
+  todoList.innerHTML = "";
+  inprogressList.innerHTML = "";
+  doneList.innerHTML = "";
+
+  tasks.forEach(task => {
+    const div = document.createElement("div");
+    div.className = "task";
+    div.draggable = true;
+    div.dataset.id = task.id;
+    div.innerHTML = `<strong>${task.title}</strong><br/><small>${task.description}</small>`;
+
+    if(task.status === "em andamento" && task.responsible) {
+      const respDiv = document.createElement("div");
+      respDiv.className = "responsible";
+      respDiv.textContent = `Responsável: ${task.responsible}`;
+      div.appendChild(respDiv);
+    }
+
+    // Permite editar a tarefa ao clicar
+    div.addEventListener("click", () => openEditTaskModal(task.id));
+
+    // Drag events
+    div.addEventListener("dragstart", dragStart);
+
+    if(task.status === "a fazer") {
+      todoList.appendChild(div);
+    } else if(task.status === "em andamento") {
+      inprogressList.appendChild(div);
+    } else if(task.status === "concluído") {
+      doneList.appendChild(div);
+    }
+  });
+}
+
+// --- Drag & Drop ---
+
+let draggedTaskId = null;
+
+function dragStart(e) {
+  draggedTaskId = e.target.dataset.id;
+}
+
+function allowDrop(e) {
+  e.preventDefault();
+}
+
+function drop(e) {
+  e.preventDefault();
+  if (!draggedTaskId) return;
+  const colId = e.currentTarget.id;
+
+  const statusMap = {
+    "todo-list": "a fazer",
+    "inprogress-list": "em andamento",
+    "done-list": "concluído"
+  };
+
+  const task = tasks.find(t => t.id === draggedTaskId);
+  if (!task) return;
+
+  task.status = statusMap[colId] || task.status;
+
+  // Se foi para em andamento e não tem responsável, limpa responsável
+  if(task.status !== "em andamento") {
+    task.responsible = "";
+  }
+
+  saveTasks();
+  renderTasks();
+  draggedTaskId = null;
+}
+
+// --- Modal para criar/editar tarefa ---
+
+function openNewTaskModal() {
+  editingTaskId = null;
+  modalTitle.textContent = "Nova Tarefa";
+  taskTitleInput.value = "";
+  taskDescInput.value = "";
+  taskRespSelect.value = "";
+  toggleModal(true);
+}
+
+function openEditTaskModal(id) {
+  const task = tasks.find(t => t.id === id);
+  if(!task) return;
+  editingTaskId = id;
+  modalTitle.textContent = "Editar Tarefa";
+  taskTitleInput.value = task.title;
+  taskDescInput.value = task.description;
+  taskRespSelect.value = task.status === "em andamento" ? task.responsible : "";
+  toggleModal(true);
+}
+
+function toggleModal(show) {
+  if(show) {
+    taskModal.classList.remove("hidden");
+  } else {
+    taskModal.classList.add("hidden");
+  }
+}
+
+function saveTask() {
+  const title = taskTitleInput.value.trim();
+  const desc = taskDescInput.value.trim();
+  const resp = taskRespSelect.value;
+
+  if(!title) {
+    alert("Título é obrigatório!");
+    return;
+  }
+
+  if(editingTaskId) {
+    // Edita tarefa
+    const task = tasks.find(t => t.id === editingTaskId);
+    if(task) {
+      task.title = title;
+      task.description = desc;
+
+      if(task.status === "em andamento") {
+        task.responsible = resp;
+      } else {
+        task.responsible = "";
+      }
+    }
+  } else {
+    // Cria nova tarefa, sempre inicia em "a fazer"
+    const newTask = {
+      id: Date.now().toString(),
+      title: title,
+      description: desc,
+      status: "a fazer",
+      responsible: ""
+    };
+    tasks.push(newTask);
+  }
+  saveTasks();
+  renderTasks();
+  toggleModal(false);
+}
+
+// --- Login/logout ---
+
+function doLogin() {
+  const pw = passwordInput.value;
+  if(pw === PASSWORD) {
+    loggedIn = true;
+    loginContainer.classList.add("hidden");
+    crmContainer.classList.remove("hidden");
+    loadTasks();
+    renderTasks();
+  } else {
+    loginError.textContent = "Senha incorreta. Tente novamente.";
+  }
+}
+
+function doLogout() {
+  loggedIn = false;
+  passwordInput.value = "";
+  loginError.textContent = "";
+  crmContainer.classList.add("hidden");
+  loginContainer.classList.remove("hidden");
+}
+
+// --- Eventos ---
+
+loginBtn.addEventListener("click", doLogin);
+passwordInput.addEventListener("keyup", e => {
+  if(e.key === "Enter") doLogin();
+});
+logoutBtn.addEventListener("click", doLogout);
+
+addTodoBtn.addEventListener("click", openNewTaskModal);
+
+saveTaskBtn.addEventListener("click", saveTask);
+cancelTaskBtn.addEventListener("click", () => toggleModal(false));
+
+// Configura drop zones
+todoList.parentElement.addEventListener("dragover", allowDrop);
+inprogressList.parentElement.addEventListener("dragover", allowDrop);
+doneList.parentElement.addEventListener("dragover", allowDrop);
+
+todoList.parentElement.addEventListener("drop", drop);
+inprogressList.parentElement.addEventListener("drop", drop);
+doneList.parentElement.addEventListener("drop", drop);
+
