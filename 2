@@ -1,0 +1,132 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background-color: #f0f2f5;
+  color: #222;
+}
+
+.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+input, textarea, select, button {
+  font-size: 1rem;
+  margin-top: 8px;
+  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+button {
+  cursor: pointer;
+  background-color: #003366;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #0055aa;
+}
+
+.error-msg {
+  color: red;
+  margin-top: 8px;
+}
+
+.hidden {
+  display: none;
+}
+
+#crm-container {
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #003366;
+  padding-bottom: 10px;
+}
+
+main {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.column {
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  padding: 10px;
+  width: 30%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.column h2 {
+  text-align: center;
+  margin-top: 0;
+  color: #003366;
+}
+
+.task-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 5px;
+  min-height: 300px;
+}
+
+.task {
+  background: #e6f0ff;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 8px;
+  cursor: grab;
+}
+
+.task .responsible {
+  font-weight: bold;
+  color: #003366;
+  margin-top: 6px;
+  font-size: 0.9rem;
+}
+
+#add-todo-btn {
+  margin-top: 10px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 6px;
+  width: 400px;
+  max-width: 90%;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
