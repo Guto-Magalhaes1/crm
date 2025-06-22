@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CRM Betta - Gestão de Tarefas</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="login-container" class="centered">
+  <h2>Login CRM Betta</h2>
+  <input type="password" id="password" placeholder="Senha" autofocus />
+  <button id="login-btn">Entrar</button>
+  <p id="login-error" class="error-msg"></p>
+</div>
+
+<div id="crm-container" class="hidden">
+  <header>
+    <h1>CRM Betta - Gestão de Tarefas</h1>
+    <button id="logout-btn">Sair</button>
+  </header>
+  <main>
+    <section class="column" id="todo">
+      <h2>A Fazer</h2>
+      <div class="task-list" id="todo-list"></div>
+      <button id="add-todo-btn">+ Nova Tarefa</button>
+    </section>
+    <section class="column" id="inprogress">
+      <h2>Em Andamento</h2>
+      <div class="task-list" id="inprogress-list"></div>
+    </section>
+    <section class="column" id="done">
+      <h2>Concluído</h2>
+      <div class="task-list" id="done-list"></div>
+    </section>
+  </main>
+  <div id="task-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="modal-title">Nova Tarefa</h3>
+      <label for="task-title">Título</label>
+      <input type="text" id="task-title" />
+      <label for="task-desc">Descrição</label>
+      <textarea id="task-desc"></textarea>
+      <label for="task-resp">Responsável (apenas em andamento)</label>
+      <select id="task-resp">
+        <option value="">Nenhum</option>
+        <option value="Gabriel">Gabriel</option>
+        <option value="Mateus">Mateus</option>
+        <option value="Denise">Denise</option>
+        <option value="Auxiliar">Auxiliar</option>
+      </select>
+      <div class="modal-buttons">
+        <button id="save-task-btn">Salvar</button>
+        <button id="cancel-task-btn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
